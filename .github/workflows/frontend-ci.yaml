@@ -1,0 +1,45 @@
+# The name of the workflow
+name: frontend-build
+
+# Triggers for the workflow
+on:
+  # Manually trigger the workflow
+  workflow_dispatch:
+
+  # Automatic trigger when pull request on the main branch
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  eslint:
+    # Use latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out code from repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Set up a Node.js environment using the specified node version.
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      # Cache the dependancies
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: starter/frontend/.npm
+          key: ${{ runner.os }}-${{ hashFiles('stater/frontend/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-
+
+      # Install the dependancies
+      - name: Install dependancies
+        run: cd starter/frontend && npm ci
+
+      # Run the code lint
+      - name: Code linting
+        run: cd starter/frontend && npm run lint
