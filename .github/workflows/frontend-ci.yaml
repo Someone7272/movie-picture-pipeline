@@ -41,8 +41,8 @@ jobs:
       - name: Install dependancies
         run: cd starter/frontend && npm ci
 
-      # Run eslint
-      - name: eslint
+      # Run ESLint
+      - name: ESLint
         run: cd starter/frontend && npm run lint
 
   Test:
