@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: 18.x
 
-      # Cache the dependancies
+      # Cache the dependencies
       - name: Cache dependencies
         uses: actions/cache@v4
         id: cache
@@ -37,8 +37,8 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-npm-cache-
 
-      # Install the dependancies
-      - name: Install dependancies
+      # Install the dependencies
+      - name: Install dependencies
         run: cd starter/frontend && npm ci
 
       # Run ESLint
@@ -60,7 +60,7 @@ jobs:
         with:
           node-version: 18.x
 
-      # Cache the dependancies
+      # Cache the dependencies
       - name: Cache dependencies
         uses: actions/cache@v4
         id: cache
@@ -70,8 +70,8 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-npm-cache-
 
-      # Install the dependancies
-      - name: Install dependancies
+      # Install the dependencies
+      - name: Install dependencies
         run: cd starter/frontend && npm ci
 
       # Run application tests
