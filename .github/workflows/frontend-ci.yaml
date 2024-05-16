@@ -74,6 +74,6 @@ jobs:
       - name: Install dependancies
         run: cd starter/frontend && npm ci
 
-      # Run tests
-      - name: testing
+      # Run application tests
+      - name: Tests
         run: cd starter/frontend && CI=true && npm test
