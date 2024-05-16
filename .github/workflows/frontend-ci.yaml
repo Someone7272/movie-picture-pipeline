@@ -33,8 +33,7 @@ jobs:
         id: cache
         with:
           path: starter/frontend/.npm
-          key: ${{ runner.os }}-${{ hashFiles('stater/frontend/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
       # Install the dependancies
       - name: Install dependancies

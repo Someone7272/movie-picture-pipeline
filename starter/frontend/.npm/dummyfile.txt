@@ -1,1 +1,1 @@
-This file created only to force the Git to create a folder for NPM cache.
+This is a cache folder to save the dependency cache in.
