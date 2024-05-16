@@ -32,8 +32,10 @@ jobs:
         uses: actions/cache@v4
         id: cache
         with:
-          path: starter/frontend/.npm
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/frontend/package-lock.json') }}
+          restore-keys: |
+          ${{ runner.OS }}-npm-cache-
 
       # Install the dependancies
       - name: Install dependancies
