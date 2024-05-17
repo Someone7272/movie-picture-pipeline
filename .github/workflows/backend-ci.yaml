@@ -21,9 +21,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Install pip and Flake8
-      - name: Install pipenv and Flake8
-        run: pip install pipenv flake8
+      # Install Pipenv
+      - name: Install Pipenv
+        run: pip install pipenv
+
+      # Install Flake8
+      - name: Install Flake8
+        run: pip install flake8
 
       # Cache the dependencies
       - name: Cache dependencies
@@ -39,6 +43,6 @@ jobs:
       - name: Install dependencies
         run: cd starter/backend && pipenv install
 
-      # Run lint
-      - name: Lint
+      # Run Flake8
+      - name: Flake8
         run: cd starter/backend && pipenv run lint
