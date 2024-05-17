@@ -41,4 +41,4 @@ jobs:
 
       # Run lint
       - name: Lint
-        run: cd starter/backend && pipenv run lint-fail
+        run: cd starter/backend && pipenv run lint
