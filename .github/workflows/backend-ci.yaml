@@ -21,8 +21,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Install pipenv and flake8
-      - name: Install pipenv
+      # Install pip and Flake8
+      - name: Install pipenv and Flake8
         run: pip install pipenv flake8
 
       # Cache the dependencies
@@ -30,7 +30,7 @@ jobs:
         uses: actions/cache@v4
         id: cache
         with:
-          path: ~/.python
+          path: ~/.cache/pip
           key: ${{ runner.OS }}-python-cache-${{ hashFiles('**/backend/Pipfile.lock') }}
           restore-keys: |
             ${{ runner.OS }}-python-cache-
