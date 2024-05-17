@@ -21,9 +21,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Install pipenv
+      # Install pipenv and flake8
       - name: Install pipenv
-        run: pip install pipenv
+        run: pip install pipenv flake8
 
       # Cache the dependencies
       - name: Cache dependencies
