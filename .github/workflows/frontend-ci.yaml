@@ -76,4 +76,4 @@ jobs:
 
       # Run application tests
       - name: Tests
-        run: cd starter/frontend && CI=true && npm test
+        run: cd starter/frontend && npm test
