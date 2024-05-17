@@ -46,3 +46,34 @@ jobs:
       # Run Flake8
       - name: Flake8
         run: cd starter/backend && pipenv run lint
+
+  Test:
+    # Use latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out code from repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Install Pipenv
+      - name: Install Pipenv
+        run: pip install pipenv
+
+      # Cache the dependencies
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.OS }}-python-cache-${{ hashFiles('**/backend/Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-python-cache-
+
+      # Install the dependencies
+      - name: Install dependencies
+        run: cd starter/backend && pipenv install
+
+      # Run application tests
+      - name: Tests
+        run: cd starter/backend && pipenv run test
