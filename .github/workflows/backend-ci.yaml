@@ -31,7 +31,7 @@ jobs:
         id: cache
         with:
           path: ~/.python
-          key: ${{ runner.OS }}-python-cache-${{ hashFiles('**/backend/Pipfile.lock.') }}
+          key: ${{ runner.OS }}-python-cache-${{ hashFiles('**/backend/Pipfile.lock') }}
           restore-keys: |
             ${{ runner.OS }}-python-cache-
 
