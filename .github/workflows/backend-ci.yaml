@@ -78,7 +78,7 @@ jobs:
       - name: Tests
         run: cd starter/backend && pipenv run test
 
-  Test build:
+  Build:
     # Check that both Lint and Test jobs completed successfully
     needs: [Lint, Test]
 
