@@ -39,11 +39,15 @@ jobs:
 
       # Install the dependencies
       - name: Install dependencies
-        run: cd starter/frontend && npm ci
+        run: |
+          cd starter/frontend
+          npm ci
 
       # Run ESLint
       - name: ESLint
-        run: cd starter/frontend && npm run lint
+        run: |
+          cd starter/frontend
+          npm run lint
 
   Test:
     # Use latest version of Ubuntu
@@ -72,8 +76,12 @@ jobs:
 
       # Install the dependencies
       - name: Install dependencies
-        run: cd starter/frontend && npm ci
+        run: |
+          cd starter/frontend
+          npm ci
 
       # Run application tests
       - name: Tests
-        run: cd starter/frontend && npm test
+        run: |
+          cd starter/frontend
+          npm test

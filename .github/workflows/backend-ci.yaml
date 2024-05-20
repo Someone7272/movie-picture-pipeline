@@ -23,11 +23,13 @@ jobs:
 
       # Install Pipenv
       - name: Install Pipenv
-        run: pip install pipenv
+        run: |
+          pip install pipenv
 
       # Install Flake8
       - name: Install Flake8
-        run: pip install flake8
+        run: |
+          pip install flake8
 
       # Cache the dependencies
       - name: Cache dependencies
@@ -41,11 +43,15 @@ jobs:
 
       # Install the dependencies
       - name: Install dependencies
-        run: cd starter/backend && pipenv install
+        run: |
+          cd starter/backend
+          pipenv install
 
       # Run Flake8
       - name: Flake8
-        run: cd starter/backend && pipenv run lint
+        run: |
+          cd starter/backend
+          pipenv run lint
 
   Test:
     # Use latest version of Ubuntu
@@ -58,7 +64,8 @@ jobs:
 
       # Install Pipenv
       - name: Install Pipenv
-        run: pip install pipenv
+        run: |
+          pip install pipenv
 
       # Cache the dependencies
       - name: Cache dependencies
@@ -72,11 +79,15 @@ jobs:
 
       # Install the dependencies
       - name: Install dependencies
-        run: cd starter/backend && pipenv install
+        run: |
+          cd starter/backend
+          pipenv install
 
       # Run application tests
       - name: Tests
-        run: cd starter/backend && pipenv run test
+        run: |
+          cd starter/backend
+          pipenv run test
 
   Build:
     # Check that both Lint and Test jobs completed successfully
@@ -86,6 +97,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Check out code from repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
       # Build the application with Docker
       - name: Docker build
         run: |
