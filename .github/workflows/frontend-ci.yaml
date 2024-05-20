@@ -85,3 +85,21 @@ jobs:
         run: |
           cd starter/frontend
           npm test
+
+  Build:
+    # Check that both Lint and Test jobs completed successfully
+    needs: [Lint, Test]
+
+    # Use latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out code from repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Build the application with Docker
+      - name: Docker build
+        run: |
+          cd starter/frontend
+          docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest .
