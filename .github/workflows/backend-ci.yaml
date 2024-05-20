@@ -106,6 +106,7 @@ jobs:
         run: |
           cd starter/backend
           docker build --tag mp-backend:latest .
-          curl http://localhost:5000/movies
+          docker run -p 5000:5000 --name mp-backend -d mp-backend
+          curl http://mp-backend:5000/movies
           docker logs -f mp-backend
           docker stop
