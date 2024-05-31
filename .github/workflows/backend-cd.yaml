@@ -102,6 +102,10 @@ jobs:
     # Use latest version of Ubuntu
     runs-on: ubuntu-latest
 
+    # Save the ECR registry as an output to be used later
+    outputs:
+      ecr-registry: ${{ steps.login-ecr.outputs.registry }}
+
     steps:
       # Check out code from repository
       - name: Check out repository
@@ -166,7 +170,7 @@ jobs:
       # Set image for Kustomize
       - name: Set Kustomize image
         env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY: ${{ needs.Build.outputs.ecr-registry }}
         run: |
           cd starter/backend/k8s
           kustomize edit set image backend=$REGISTRY/$REPOSITORY:$IMAGE_TAG
