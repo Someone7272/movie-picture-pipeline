@@ -1,0 +1,111 @@
+# The name of the workflow
+name: frontend-deploy
+
+# Triggers for the workflow
+on:
+  # Manually trigger the workflow
+  workflow_dispatch:
+
+  # Automatic trigger when push on the main branch and only when frontend code changes
+  push:
+    branches:
+      - main
+    paths:
+      - starter/frontend/**
+
+jobs:
+  Lint:
+    # Use latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out code from repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Set up a Node.js with version 18
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      # Cache the dependencies
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-cache-
+
+      # Install the dependencies
+      - name: Install dependencies
+        run: |
+          cd starter/frontend
+          npm ci
+
+      # Run ESLint
+      - name: ESLint
+        run: |
+          cd starter/frontend
+          npm run lint
+
+  Test:
+    # Use latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out code from repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Set up a Node.js with version 18
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      # Cache the dependencies
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-cache-
+
+      # Install the dependencies
+      - name: Install dependencies
+        run: |
+          cd starter/frontend
+          npm ci
+
+      # Run application tests
+      - name: Tests
+        run: |
+          cd starter/frontend
+          npm test
+
+  Deploy:
+    # Check that both Lint and Test jobs completed successfully
+    needs: [Lint, Test]
+
+    # Use latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Login to the AWS ECR repository
+
+      # Build the application with Docker and push it to the AWS ECR repository
+      - name: Docker build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./starter/frontend
+          push: true
+          tags: mp-frontend:${{ github.sha }}

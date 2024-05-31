@@ -1,0 +1,127 @@
+# The name of the workflow
+name: backend-deploy
+
+# Triggers for the workflow
+on:
+  # Manually trigger the workflow
+  workflow_dispatch:
+
+  # Automatic trigger when push on the main branch and only when backend code changes
+  push:
+    branches:
+      - main
+    paths:
+      - starter/backend/**
+
+jobs:
+  Lint:
+    # Use latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out code from repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Install Pipenv
+      - name: Install Pipenv
+        run: |
+          pip install pipenv
+
+      # Install Flake8
+      - name: Install Flake8
+        run: |
+          pip install flake8
+
+      # Cache the dependencies
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.OS }}-python-cache-${{ hashFiles('**/backend/Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-python-cache-
+
+      # Install the dependencies
+      - name: Install dependencies
+        run: |
+          cd starter/backend
+          pipenv install
+
+      # Run Flake8
+      - name: Flake8
+        run: |
+          cd starter/backend
+          pipenv run lint
+
+  Test:
+    # Use latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out code from repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Install Pipenv
+      - name: Install Pipenv
+        run: |
+          pip install pipenv
+
+      # Cache the dependencies
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.OS }}-python-cache-${{ hashFiles('**/backend/Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-python-cache-
+
+      # Install the dependencies
+      - name: Install dependencies
+        run: |
+          cd starter/backend
+          pipenv install
+
+      # Run application tests
+      - name: Tests
+        run: |
+          cd starter/backend
+          pipenv run test
+
+  Deploy:
+    # Check that both Lint and Test jobs completed successfully
+    needs: [Lint, Test]
+
+    # Use latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out code from repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Configure AWS credentials and assume IAM role
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_IAM_ROLE_ARN }}
+          aws-region: us-east-1
+
+      # Login to the AWS ECR repository
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Build the application with Docker and push it to the AWS ECR repository
+      - name: Docker build
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: backend
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          cd starter/frontend
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
