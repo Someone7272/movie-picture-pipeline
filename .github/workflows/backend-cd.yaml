@@ -165,6 +165,8 @@ jobs:
 
       # Set image for Kustomize
       - name: Set Kustomize image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           cd starter/backend/k8s
           kustomize edit set image backend=$REGISTRY/$REPOSITORY:$IMAGE_TAG
