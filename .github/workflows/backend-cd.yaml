@@ -13,9 +13,9 @@ on:
     paths:
       - starter/backend/**
 
-  env:
-    REPOSITORY: backend
-    IMAGE_TAG: ${{ github.sha }}
+env:
+  REPOSITORY: backend
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   Lint:
