@@ -105,4 +105,4 @@ jobs:
       - name: Docker build
         run: |
           cd starter/backend
-          docker build --tag mp-backend:latest .
+          docker build -t mp-backend:latest .

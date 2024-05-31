@@ -13,6 +13,10 @@ on:
     paths:
       - starter/backend/**
 
+  env:
+    REPOSITORY: backend
+    IMAGE_TAG: ${{ github.sha }}
+
 jobs:
   Lint:
     # Use latest version of Ubuntu
@@ -91,7 +95,7 @@ jobs:
           cd starter/backend
           pipenv run test
 
-  Deploy:
+  Build:
     # Check that both Lint and Test jobs completed successfully
     needs: [Lint, Test]
 
@@ -103,11 +107,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Configure AWS credentials and assume IAM role
+      # Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: us-east-1
+          aws-region: ${{ vars.AWS_REGION }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
@@ -120,9 +124,54 @@ jobs:
       - name: Docker build
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: backend
-          IMAGE_TAG: ${{ github.sha }}
         run: |
           cd starter/frontend
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+  Deploy:
+    # Check that the build job completed successfully
+    needs: [Build]
+
+    # Use latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out code from repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Login to the AWS ECR repository
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Set up kubectl
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      # Update kubeconfig for the cluster
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ vars.AWS_REGION }} --name ${{ vars.AWS_EKS_CLUSTER }}
+
+      # Set image for Kustomize
+      - name: Set Kustomize image
+        run: |
+          cd starter/backend/k8s
+          kustomize edit set image backend=$REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      # Deploy application to the cluster
+      - name: Deploy to AWS ECR
+        run: |
+          cd starter/backend/k8s
+          kustomize build
+          kubectl apply -f -
