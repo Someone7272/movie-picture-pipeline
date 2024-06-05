@@ -1,5 +1,5 @@
 # The name of the workflow
-name: backend-build
+name: Backend Continuous Integration
 
 # Triggers for the workflow
 on:
